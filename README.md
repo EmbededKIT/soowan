@@ -30,7 +30,7 @@
 <br/><br/>
 
 ## 실행 명령어
-- gcc -o '파일명' '파일명'.c -lwiringPi -lpthread
+- gcc  -o  '파일명'  '파일명'.c  -lwiringPi  -lpthread
 
 <br/><br/>
 

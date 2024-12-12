@@ -53,6 +53,51 @@ unsigned char serialRead(const int fd)
     return x;
 }
 
+// 블루투스 데이터 처리
+void process_bluetooth_data(const char *buffer)
+{
+    if (buffer[0] == 'P' && buffer[2] == 'C')
+    {
+        user_count = buffer[1] - '0';
+        card_count = buffer[3] - '0';
+
+        printf("People number: %d, Card number: %d\n", user_count, card_count);
+
+        if (user_positions != NULL)
+        {
+            free(user_positions);
+        }
+
+        user_positions = (float *)malloc(user_count * sizeof(float));
+        if (user_positions == NULL)
+        {
+            printf("메모리 할당 실패\n");
+            exit(1);
+        }
+
+        // 사용자 좌표를 코드에서 직접 설정
+        float predefined_positions[] = {0.0, 10.0, 20.0, 30.0, 40.0};
+        for (int i = 0; i < user_count; i++)
+        {
+            user_positions[i] = predefined_positions[i]; // 좌표를 할당
+            printf("User %d position: %.2f\n", i + 1, user_positions[i]);
+        }
+
+        pthread_t servo_thread, dc_thread;
+        pthread_create(&servo_thread, NULL, rotate_servo, NULL);
+        pthread_create(&dc_thread, NULL, rotate_dc, NULL);
+
+        pthread_join(servo_thread, NULL);
+        pthread_join(dc_thread, NULL);
+
+        printf("\n[시스템] 모든 카드가 분배되었습니다.\n");
+    }
+    else
+    {
+        printf("무시된 데이터: %s\n", buffer);
+    }
+}
+
 // 서보 모터 동작
 void *rotate_servo(void *arg)
 {
@@ -149,51 +194,6 @@ void *rotate_dc(void *arg)
 
     free(user_card_count);
     return NULL;
-}
-
-// 블루투스 데이터 처리
-void process_bluetooth_data(const char *buffer)
-{
-    if (buffer[0] == 'P' && buffer[2] == 'C')
-    {
-        user_count = buffer[1] - '0';
-        card_count = buffer[3] - '0';
-
-        printf("People number: %d, Card number: %d\n", user_count, card_count);
-
-        if (user_positions != NULL)
-        {
-            free(user_positions);
-        }
-
-        user_positions = (float *)malloc(user_count * sizeof(float));
-        if (user_positions == NULL)
-        {
-            printf("메모리 할당 실패\n");
-            exit(1);
-        }
-
-        // 사용자 좌표를 코드에서 직접 설정
-        float predefined_positions[] = {0.0, 10.0, 20.0, 30.0, 40.0};
-        for (int i = 0; i < user_count; i++)
-        {
-            user_positions[i] = predefined_positions[i]; // 좌표를 할당
-            printf("User %d position: %.2f\n", i + 1, user_positions[i]);
-        }
-
-        pthread_t servo_thread, dc_thread;
-        pthread_create(&servo_thread, NULL, rotate_servo, NULL);
-        pthread_create(&dc_thread, NULL, rotate_dc, NULL);
-
-        pthread_join(servo_thread, NULL);
-        pthread_join(dc_thread, NULL);
-
-        printf("\n[시스템] 모든 카드가 분배되었습니다.\n");
-    }
-    else
-    {
-        printf("무시된 데이터: %s\n", buffer);
-    }
 }
 
 int main()

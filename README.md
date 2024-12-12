@@ -15,9 +15,13 @@
 
 <br/><br/>
 
-## camera_test.c
+## camera_test file
 - card.c 파일에 카메라 입력 받기
   - 사용자 위치 배열이 저장된 파일 읽기
+### camera_test1.c
+- 사용자 위치 배열을 포인터로 선언
+### camera_test2.c
+- 사용자 위치 배열을 전역 변수로 선언
 
 <br/><br/>
 

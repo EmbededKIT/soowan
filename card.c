@@ -25,7 +25,7 @@ pthread_cond_t servo_at_position = PTHREAD_COND_INITIALIZER;
 volatile int servo_reached = 0; // 서보 모터가 특정 위치에 도착
 volatile float servo_current_angle = 0.0; // 서보 모터의 현재 각도
 volatile int card_distributed = 0; // 전체 분배된 카드 수
-volatile float user_positions[USER_COUNT] = {-30.0, 0.0, 30.0}; // 사용자 위치
+volatile float user_positions[USER_COUNT] = {-60.0, 0.0, 60.0}; // 사용자 위치
 
 // DC 모터: softPWM, 서보 모터: 기존의 하드웨어 PWM
 void init_gpio()
@@ -64,13 +64,14 @@ void *rotate_servo(void *arg)
         pwmWrite(SERVO_PIN, duty);
         delay(100);
 
-        printf("\n[서보 모터] %.2f도 위치로 이동\n", servo_current_angle);
+        printf("\r[서보 모터] %.2f도 위치로 이동", servo_current_angle);
+        fflush(stdout);
 
         for (int i = 0; i < USER_COUNT; i++)
         {
             if (fabs(servo_current_angle - user_positions[i]) < 1e-1)
             {
-                printf("[서보 모터] 사용자 %d의 위치 (%.2f도)에 도달\n", i + 1, user_positions[i]);
+                printf("\n[서보 모터] 사용자 %d의 위치 (%.2f도)에 도달\n", i + 1, user_positions[i]);
 
                 pthread_mutex_lock(&mutex);
                 servo_reached = i + 1;
@@ -146,7 +147,7 @@ int main()
     pthread_join(servo_thread, NULL);
     pthread_join(dc_thread, NULL);
 
-    printf("\n[시스템] 모든 카드가 분배되었습니다. 프로그램을 종료합니다.\n");
+    printf("\n[시스템] 모든 카드가 분배되었습니다.\n");
 
     return 0;
 }

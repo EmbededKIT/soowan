@@ -1,27 +1,36 @@
-## card.c
+## 1. card.c
 - 임의 지정 값
   - 사용자 수, 사용자당 카드 수
   - 사용자 위치 배열
 - DC 모터에 softPWM 사용
-- 실행 명령어
-  - gcc -o card card.c -lwiringPi -lpthread
  
 <br/><br/>
 
-## bt_test.c
-- card.c 파일에 블루투스 입력 받기
+## 2. bt_test.c
+- card.c 파일에 블루투스 입력 받기 추가
   - 사용자 수
   - 사용자당 카드 수
 
 <br/><br/>
 
-## camera_test file
-- card.c 파일에 카메라 입력 받기
+## 3. camera_test file
+- card.c 파일에 카메라 입력 받기 추가
   - 사용자 위치 배열이 저장된 파일 읽기
 ### camera_test1.c
 - 사용자 위치 배열을 포인터로 선언
 ### camera_test2.c
 - 사용자 위치 배열을 전역 변수로 선언
+
+<br/><br/>
+
+## bt_camera.c
+- bt_test.c와 camera_test1.c 통합
+> camera_test1.c를 사용한 파일이 잘 실행되지 않으면 camera_test2.c 파일 사용
+
+<br/><br/>
+
+## 실행 명령어
+- gcc -o '파일명' '파일명'.c -lwiringPi -lpthread
 
 <br/><br/>
 
@@ -40,3 +49,5 @@
 2. GND: GROUND (6)
 3. TXD: GPIO 1 (EEPROM SCL) (28)
 4. RXD: GPIO 0 (EEPROM SDA) (27)
+
+<br/><br/>

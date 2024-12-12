@@ -80,7 +80,8 @@ void *rotate_servo(void *arg)
         pwmWrite(SERVO_PIN, duty);
         delay(100);
 
-        printf("\n[서보 모터] %.2f도 위치로 이동\n", servo_current_angle);
+        printf("\r[서보 모터] %.2f도 위치로 이동\n", servo_current_angle);
+        fflush(stdout);
 
         for (int i = 0; i < user_count; i++)
         {

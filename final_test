@@ -14,9 +14,7 @@
 #define DC_START 19        // DC 모터 핀
 #define DC_END 18       // DC 모터 핀
 #define DC_START_SPEED 100 // 0 ~ 100
-#define DC_END_SPEED 30
-
-#define CARD_COUNT 3 // 사용자당 카드 수
+#define DC_END_SPEED 30 
 
 // 전역 변수 및 조건 변수
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -33,7 +31,7 @@ volatile int card_count;
     unsigned char dat;
 
 #define BAUD_RATE 115200
-static const char* UART1_DEV = "/dev/ttyAMA1"; // RPi5: UART1 장치 파일
+static const char* UART1_DEV = "/dev/ttyAMA2"; // RPi5: UART1 장치 파일
 int people_number = 0; // 전역 변수
 
 unsigned char serialRead(const int fd); // 1Byte 데이터를 수신하는 함수
@@ -101,7 +99,7 @@ void *rotate_servo(void *arg)
     int index = 0;
     int direction = 1;
 
-    while (card_distributed < user_count * CARD_COUNT)
+    while (card_distributed < user_count * card_count)
     {
         servo_current_angle = -90.0 + 1.0 * index * direction;
 
@@ -119,7 +117,7 @@ void *rotate_servo(void *arg)
             duty = 250;
 
         pwmWrite(SERVO_PIN, duty);
-        delay(20);
+        delay(30);
 
         printf("\r[서보 모터] %.2f도 위치로 이동", servo_current_angle);
         fflush(stdout);
@@ -149,7 +147,7 @@ void *rotate_dc()
 {
     int *user_card_count = (int *)calloc(user_count, sizeof(int)); // 각 사용자가 받은 카드 수
 
-    while (card_distributed < user_count * CARD_COUNT)
+    while (card_distributed < user_count * card_count)
     {
         pthread_mutex_lock(&mutex);
         while (!servo_reached)
@@ -161,7 +159,7 @@ void *rotate_dc()
         servo_reached = 0;            // 다시 0으로 초기화하여 wait
         pthread_mutex_unlock(&mutex);
 
-        if (user_card_count[user] < CARD_COUNT)
+        if (user_card_count[user] < card_count)
         {
             user_card_count[user]++;
             card_distributed++;
@@ -201,7 +199,7 @@ int return_card_number(){
             // 읽은 데이터가 2~6인 경우만 처리
             if (dat >= '1' && dat <= '5') {
                 people_number = dat - '0'; // 아스키 값을 정수로 변환
-                printf("People number: %d\n", people_number);
+                printf("Input the card number in App: %d\n", people_number);
                 return people_number;
             } else {
                 printf("무시된 데이터: %c\n", dat);

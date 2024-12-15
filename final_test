@@ -26,13 +26,11 @@ volatile int card_distributed = 0;         // 전체 분배된 카드 수
 volatile float *user_positions = NULL; // 사용자 위치
 volatile int user_count;
 volatile int card_count;
-
-    int fd_serial;
-    unsigned char dat;
+int fd_serial;
+unsigned char dat;
 
 #define BAUD_RATE 115200
 static const char* UART1_DEV = "/dev/ttyAMA2"; // RPi5: UART1 장치 파일
-int people_number = 0; // 전역 변수
 
 unsigned char serialRead(const int fd); // 1Byte 데이터를 수신하는 함수
 
@@ -198,9 +196,9 @@ int return_card_number(){
             
             // 읽은 데이터가 2~6인 경우만 처리
             if (dat >= '1' && dat <= '5') {
-                people_number = dat - '0'; // 아스키 값을 정수로 변환
-                printf("Input the card number in App: %d\n", people_number);
-                return people_number;
+                card_count = dat - '0'; // 아스키 값을 정수로 변환
+                printf("Input the card number in App: %d\n", card_count);
+                return card_count;
             } else {
                 printf("무시된 데이터: %c\n", dat);
             }
